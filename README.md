@@ -1,1 +1,1 @@
-# SAE51_ERP
+# sae-dolibarr
