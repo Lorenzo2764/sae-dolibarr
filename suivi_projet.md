@@ -1,17 +1,16 @@
 # Journal de bord
 
-(remplacer les items en majuscule)
 
-* TITRE PROJET
-* NOM CHEF DE PROJET
-* NOMS AUTRE MEMBRES EQUIPE
-* DATE DEBUT
+* SAE51_ERP
+* MARTINE
+* MARDON
+* 05/10/26
 
 
 ## Séance n° 1
 
-* date - heure
-* Travail effectué
+* 05/10/26 - 16H - 17H30
+* installation de la vm et documentation 
 * A faire à la prochaine séance
 * Difficultés rencontrées
 * Remarques sur la séances (membre absent, pbe technique, ...)
