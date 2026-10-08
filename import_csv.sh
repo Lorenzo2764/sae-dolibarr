@@ -6,21 +6,21 @@ cd "$(dirname "$0")"
 
 CSV="${1:-data/tiers.csv}"
 [ -f "$CSV" ] || { echo "ERREUR : fichier $CSV introuvable"; exit 1; }
-[ -f .env ]   || { echo "ERREUR : .env absent, lancer ./install.sh d'abord"; exit 1; }
-set -a; . ./.env; set +a
 
-dbexec() { docker compose exec -T -e MYSQL_PWD="$DB_ROOT_PASSWORD" db mariadb -uroot "$@"; }
+# Exécute mariadb dans le conteneur (le mot de passe root est lu dans le conteneur)
+dbexec() { docker compose exec -T db sh -c 'MYSQL_PWD="$MARIADB_ROOT_PASSWORD" exec mariadb -uroot "$@"' sh "$@"; }
 
 echo ">> Attente de la table llx_societe (créée par Dolibarr à l'installation)"
+n=""
 for i in $(seq 1 60); do
-  n=$(dbexec -N -e "SHOW TABLES FROM \`$DB_NAME\` LIKE 'llx_societe'" 2>/dev/null || true)
+  n=$(dbexec -N -e "SHOW TABLES FROM dolibarr LIKE 'llx_societe'" 2>/dev/null || true)
   [ -n "$n" ] && break
   printf '.'; sleep 5
 done
-[ -n "${n:-}" ] || { echo; echo "ERREUR : table llx_societe introuvable"; exit 1; }
+[ -n "$n" ] || { echo; echo "ERREUR : table llx_societe introuvable (./install.sh lancé ?)"; exit 1; }
 echo
 
-BATCH="imp$(date +%y%m%d%H%M)"   # 13 caractères max 14 (colonne import_key)
+BATCH="imp$(date +%y%m%d%H%M)"
 
 echo ">> Copie du CSV dans le conteneur"
 tr -d '\r' < "$CSV" | docker compose exec -T db sh -c 'cat > /tmp/tiers.csv && chmod 644 /tmp/tiers.csv'
@@ -64,7 +64,7 @@ SELECT COUNT(*) AS tiers_importes  FROM llx_societe WHERE import_key=@batch;
 SELECT COUNT(*) AS total_tiers     FROM llx_societe;
 DROP TABLE tmp_import_tiers;
 SQL
-} | dbexec -t "$DB_NAME"
+} | dbexec -t dolibarr
 
 docker compose exec -T db rm -f /tmp/tiers.csv
 echo ">> Terminé. Vérifier dans Dolibarr : Tiers > Liste"

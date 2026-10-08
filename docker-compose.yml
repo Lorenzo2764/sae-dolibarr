@@ -3,10 +3,10 @@ services:
     image: mariadb:11
     restart: unless-stopped
     environment:
-      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      MARIADB_DATABASE: ${DB_NAME}
-      MARIADB_USER: ${DB_USER}
-      MARIADB_PASSWORD: ${DB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-dolibarr}
+      MARIADB_DATABASE: dolibarr
+      MARIADB_USER: dolibarr
+      MARIADB_PASSWORD: ${DB_PASSWORD:-dolibarr}
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     volumes:
       - db_data:/var/lib/mysql
@@ -29,11 +29,11 @@ services:
       DOLI_DB_TYPE: mysqli
       DOLI_DB_HOST: db
       DOLI_DB_HOST_PORT: 3306
-      DOLI_DB_NAME: ${DB_NAME}
-      DOLI_DB_USER: ${DB_USER}
-      DOLI_DB_PASSWORD: ${DB_PASSWORD}
-      DOLI_ADMIN_LOGIN: ${DOLI_ADMIN_LOGIN}
-      DOLI_ADMIN_PASSWORD: ${DOLI_ADMIN_PASSWORD}
+      DOLI_DB_NAME: dolibarr
+      DOLI_DB_USER: dolibarr
+      DOLI_DB_PASSWORD: ${DB_PASSWORD:-dolibarr}
+      DOLI_ADMIN_LOGIN: admin
+      DOLI_ADMIN_PASSWORD: ${DOLI_ADMIN_PASSWORD:-admin}
       DOLI_URL_ROOT: http://localhost:${DOLIBARR_PORT:-8080}
       DOLI_INSTALL_AUTO: 1
       DOLI_INIT_DEMO: 0
