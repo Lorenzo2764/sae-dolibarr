@@ -1,0 +1,16 @@
+raison_sociale;type;adresse;code_postal;ville;telephone;email;siret
+Boulangerie Dupont;client;12 rue des Halles;76000;Rouen;02 35 00 00 01;contact@dupont.example;12345678900011
+Garage Lemaire;client;45 avenue de la Mer;76600;Le Havre;02 35 00 00 02;garage@lemaire.example;12345678900029
+Imprimerie Normande;fournisseur;8 quai de Seine;76100;Rouen;02 35 00 00 03;commande@imprimerie-normande.example;12345678900037
+Cabinet Martin & Associés;client;3 place du Marché;76200;Dieppe;02 35 00 00 04;info@martin-associes.example;12345678900045
+Papeterie Leroy;fournisseur;27 rue Jeanne d'Arc;76000;Rouen;02 35 00 00 05;ventes@leroy.example;12345678900052
+Transports Bellanger;both;110 route de Paris;76140;Le Petit-Quevilly;02 35 00 00 06;contact@bellanger.example;12345678900060
+Pharmacie du Centre;client;5 rue de la République;27000;Évreux;02 32 00 00 07;pharma@centre.example;12345678900078
+InfoServices Plus;fournisseur;19 rue des Écoles;14000;Caen;02 31 00 00 08;support@infoservices.example;12345678900086
+Hôtel de la Cathédrale;client;2 parvis Notre-Dame;76000;Rouen;02 35 00 00 09;resa@hotel-cathedrale.example;12345678900094
+Électricité Gosselin;both;33 rue Verte;76000;Rouen;02 35 00 00 10;devis@gosselin.example;12345678900102
+Ferme du Bois Joli;client;Lieu-dit Le Bois Joli;76190;Yvetot;02 35 00 00 11;ferme@boisjoli.example;12345678900110
+Mécanique Industrielle du Nord;fournisseur;60 zone industrielle;76120;Le Grand-Quevilly;02 35 00 00 12;commercial@min.example;12345678900128
+Restaurant Le Gros Horloge;client;14 rue du Gros-Horloge;76000;Rouen;02 35 00 00 13;contact@grosho.example;12345678900136
+Cabinet Dentaire Morel;client;9 rue Saint-Romain;76000;Rouen;02 35 00 00 14;rdv@dentaire-morel.example;12345678900144
+Cartons & Emballages Duval;fournisseur;4 rue de l'Industrie;76800;Saint-Étienne-du-Rouvray;02 35 00 00 15;ventes@duval.example;12345678900151

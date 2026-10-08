@@ -1,0 +1,53 @@
+services:
+  db:
+    image: mariadb:11
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    networks: [backend]
+
+  dolibarr:
+    image: dolibarr/dolibarr:${DOLIBARR_VERSION:-latest}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${DOLIBARR_PORT:-8080}:80"
+    environment:
+      DOLI_DB_TYPE: mysqli
+      DOLI_DB_HOST: db
+      DOLI_DB_HOST_PORT: 3306
+      DOLI_DB_NAME: ${DB_NAME}
+      DOLI_DB_USER: ${DB_USER}
+      DOLI_DB_PASSWORD: ${DB_PASSWORD}
+      DOLI_ADMIN_LOGIN: ${DOLI_ADMIN_LOGIN}
+      DOLI_ADMIN_PASSWORD: ${DOLI_ADMIN_PASSWORD}
+      DOLI_URL_ROOT: http://localhost:${DOLIBARR_PORT:-8080}
+      DOLI_INSTALL_AUTO: 1
+      DOLI_INIT_DEMO: 0
+      DOLI_COMPANY_COUNTRYCODE: FR
+      PHP_INI_DATE_TIMEZONE: Europe/Paris
+    volumes:
+      - documents:/var/www/documents
+      - custom:/var/www/html/custom
+    networks: [backend]
+
+volumes:
+  db_data:
+  documents:
+  custom:
+
+networks:
+  backend:

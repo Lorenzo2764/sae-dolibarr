@@ -1,40 +1,16 @@
-# Journal de bord
+# Suivi du projet SAE51 - Dolibarr
 
+Équipe : <Nom 1 (chef de projet)>, <Nom 2>
 
-* SAE51_ERP
-* MARTINE
-* MARDON
-* 05/10/26
+## Séance 1 - JJ/MM/AAAA
+**Fait :**
+- ...
 
+**Difficultés :**
+- ...
 
-## Séance n° 1
+**Reste à faire :**
+- ...
 
-* 05/10/26 - 16H - 17H30
-* installation de la vm et documentation 
-* A faire à la prochaine séance
-* Difficultés rencontrées
-* Remarques sur la séances (membre absent, pbe technique, ...)
-
-
-## Séance n° 2
-
-* date - heure
-* Travail effectué
-* A faire à la prochaine séance
-* Difficultés rencontrées
-* Remarques sur la séances (membre absent, pbe technique, ...)
-
-
-## Séance n° 3
-
-* date - heure
-* Travail effectué
-* A faire à la prochaine séance
-* Difficultés rencontrées
-* Remarques sur la séances (membre absent, pbe technique, ...)
-
-
-
+## Séance 2 - JJ/MM/AAAA
 ...
-
-
