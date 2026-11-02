@@ -26,10 +26,10 @@
 
 ## Séance n° 3
 
-* date - heure
-* Travail effectué
-* A faire à la prochaine séance
-* Difficultés rencontrées
+* 02/11 13H 17H30
+* déblocage et ajouts automatique du module "Import"
+* mapping et finition
+* il manquais doli company name et supression sufixe mod 
 * Remarques sur la séances (membre absent, pbe technique, ...)
 
 
