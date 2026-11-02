@@ -38,6 +38,7 @@ services:
       DOLI_INSTALL_AUTO: 1
       DOLI_INIT_DEMO: 0
       DOLI_COMPANY_COUNTRYCODE: FR
+      DOLI_ENABLE_MODULES: modSociete,modImport,modExport
       PHP_INI_DATE_TIMEZONE: Europe/Paris
     volumes:
       - documents:/var/www/documents
