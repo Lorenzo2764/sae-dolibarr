@@ -15,7 +15,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 12
-    networks: [backend]
 
   dolibarr:
     image: dolibarr/dolibarr:${DOLIBARR_VERSION:-latest}
@@ -36,19 +35,16 @@ services:
       DOLI_ADMIN_PASSWORD: ${DOLI_ADMIN_PASSWORD:-admin}
       DOLI_URL_ROOT: http://localhost:${DOLIBARR_PORT:-8080}
       DOLI_INSTALL_AUTO: 1
+      DOLI_COMPANY_NAME: "SAE51DOLI"
       DOLI_INIT_DEMO: 0
       DOLI_COMPANY_COUNTRYCODE: FR
-      DOLI_ENABLE_MODULES: modSociete,modImport,modExport
+      DOLI_ENABLE_MODULES: Societe,Import,Export
       PHP_INI_DATE_TIMEZONE: Europe/Paris
     volumes:
       - documents:/var/www/documents
       - custom:/var/www/html/custom
-    networks: [backend]
 
 volumes:
   db_data:
   documents:
   custom:
-
-networks:
-  backend:
