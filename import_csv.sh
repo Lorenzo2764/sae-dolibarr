@@ -1,34 +1,9 @@
 #!/usr/bin/env bash
 # Import des tiers (clients/fournisseurs) depuis un CSV directement dans MariaDB.
-# La nature du tiers est déduite du nom du fichier :
-#   data/tiers_clients.csv      -> client
-#   data/tiers_fournisseurs.csv -> fournisseur
-# Usage : ./import_csv.sh [fichier.csv ...]
-#   Sans argument : importe data/tiers_clients.csv et data/tiers_fournisseurs.csv (ceux qui existent).
-set -euo pipefail
+# Usage : ./import_csv.sh
+#Exécute mariadb dans le conteneur (le mot de passe root est lu dans le conteneur)
 
-# Exécute mariadb dans le conteneur (le mot de passe root est lu dans le conteneur)
 dbexec() { docker compose exec -T db sh -c 'MYSQL_PWD="$MARIADB_ROOT_PASSWORD" exec mariadb -uroot "$@"' sh "$@"; }
-# Liste des fichiers à importer
-FILES=()
-if [ $# -gt 0 ]; then
-  FILES=("$@")
-else
-  for f in data/tiers_clients.csv data/tiers_fournisseurs.csv; do
-    [ -f "$f" ] && FILES+=("$f")
-  done
-fi
-[ "${#FILES[@]}" -gt 0 ] || { echo "ERREUR : aucun fichier à importer (data/tiers_clients.csv, data/tiers_fournisseurs.csv)"; exit 1; }
-
-echo ">> Attente de la table llx_societe (créée par Dolibarr à l'installation)"
-n=""
-for i in $(seq 1 60); do
-n=$(dbexec -N -e "SHOW TABLES FROM dolibarr LIKE 'llx_societe'" 2>/dev/null || true)
-  [ -n "$n" ] && break
-  printf '.'; sleep 5
-done
-[ -n "$n" ] || { echo; echo "ERREUR : table llx_societe introuvable (./install.sh lancé ?)"; exit 1; }
-echo
 
 import_file() {
   local CSV="$1"
@@ -46,7 +21,6 @@ import_file() {
   {
   echo "SET @batch='$BATCH', @is_client=$IS_CLIENT, @is_fourn=$IS_FOURN;"
   cat <<'SQL'
-DROP TABLE IF EXISTS tmp_import_tiers;
 CREATE TABLE tmp_import_tiers (
   id INT AUTO_INCREMENT PRIMARY KEY,
   raison_sociale VARCHAR(128), adresse VARCHAR(255),
@@ -78,12 +52,6 @@ SELECT COUNT(*) AS lignes_dans_csv FROM tmp_import_tiers;
 SELECT COUNT(*) AS tiers_importes  FROM llx_societe WHERE import_key=@batch;
 SELECT COUNT(*) AS total_tiers     FROM llx_societe;
 
--- Lignes du CSV NON importées : tiers déjà présent en base avec le même nom
-SELECT t.raison_sociale AS ligne_ignoree, s.rowid AS deja_en_base_rowid, s.nom AS nom_en_base, s.import_key
-FROM tmp_import_tiers t
-JOIN llx_societe s ON s.entity = 1 AND s.nom = t.raison_sociale COLLATE utf8mb4_unicode_ci
-WHERE s.import_key IS NULL OR s.import_key <> @batch;
-
 DROP TABLE tmp_import_tiers;
 SQL
   } | dbexec -t dolibarr
@@ -94,6 +62,4 @@ SQL
 import_file data/tiers_clients.csv "client"
 import_file data/tiers_fournisseurs.csv "fournisseur"
 
-echo ">> Terminé. Vérifier dans Dolibarr : Tiers > Clients / Fournisseurs"
-
-docker compose exec -T db sh -c 'MYSQL_PWD="$MARIADB_ROOT_PASSWORD" exec mariadb -uroot dolibarr -t -e "SELECT rowid,nom,entity,status,client,fournisseur,code_client,code_fournisseur,fk_typent,import_key,datec FROM llx_societe ORDER BY rowid"'
+echo ">> Installation et import terminé."
