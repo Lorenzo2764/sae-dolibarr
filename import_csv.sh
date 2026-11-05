@@ -6,20 +6,9 @@
 # Usage : ./import_csv.sh [fichier.csv ...]
 #   Sans argument : importe data/tiers_clients.csv et data/tiers_fournisseurs.csv (ceux qui existent).
 set -euo pipefail
-cd "$(dirname "$0")"
 
 # Exécute mariadb dans le conteneur (le mot de passe root est lu dans le conteneur)
 dbexec() { docker compose exec -T db sh -c 'MYSQL_PWD="$MARIADB_ROOT_PASSWORD" exec mariadb -uroot "$@"' sh "$@"; }
-
-# Déduit la nature (client / fournisseur) du nom de fichier
-nature_de() {
-  case "$(basename "$1")" in
-    *fournisseur*) echo fournisseur ;;
-    *client*)      echo client ;;
-    *)             echo "" ;;
-  esac
-}
-
 # Liste des fichiers à importer
 FILES=()
 if [ $# -gt 0 ]; then
@@ -30,12 +19,6 @@ else
   done
 fi
 [ "${#FILES[@]}" -gt 0 ] || { echo "ERREUR : aucun fichier à importer (data/tiers_clients.csv, data/tiers_fournisseurs.csv)"; exit 1; }
-
-# Vérification de tous les fichiers avant de commencer
-for f in "${FILES[@]}"; do
-  [ -f "$f" ] || { echo "ERREUR : fichier $f introuvable"; exit 1; }
-  [ -n "$(nature_de "$f")" ] || { echo "ERREUR : nature inconnue pour $f (le nom doit contenir 'client' ou 'fournisseur')"; exit 1; }
-done
 
 echo ">> Attente de la table llx_societe (créée par Dolibarr à l'installation)"
 n=""
@@ -49,8 +32,7 @@ echo
 
 import_file() {
   local CSV="$1"
-  local NATURE IS_CLIENT IS_FOURN BATCH
-  NATURE="$(nature_de "$CSV")"
+  local NATURE="$2"
   IS_CLIENT=0; IS_FOURN=0
   [ "$NATURE" = "client" ] && IS_CLIENT=1
   [ "$NATURE" = "fournisseur" ] && IS_FOURN=1
@@ -109,8 +91,9 @@ SQL
   docker compose exec -T db rm -f /tmp/tiers.csv
 }
 
-for f in "${FILES[@]}"; do
-  import_file "$f"
-done
+import_file data/tiers_clients.csv "client"
+import_file data/tiers_fournisseurs.csv "fournisseur"
 
 echo ">> Terminé. Vérifier dans Dolibarr : Tiers > Clients / Fournisseurs"
+
+docker compose exec -T db sh -c 'MYSQL_PWD="$MARIADB_ROOT_PASSWORD" exec mariadb -uroot dolibarr -t -e "SELECT rowid,nom,entity,status,client,fournisseur,code_client,code_fournisseur,fk_typent,import_key,datec FROM llx_societe ORDER BY rowid"'

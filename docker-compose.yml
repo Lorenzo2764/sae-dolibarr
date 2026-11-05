@@ -38,7 +38,7 @@ services:
       DOLI_COMPANY_NAME: "SAE51DOLI"
       DOLI_INIT_DEMO: 0
       DOLI_COMPANY_COUNTRYCODE: FR
-      DOLI_ENABLE_MODULES: Societe,Import,Export
+      DOLI_ENABLE_MODULES: Societe,Import,Export,Fournisseur
       PHP_INI_DATE_TIMEZONE: Europe/Paris
     volumes:
       - documents:/var/www/documents
