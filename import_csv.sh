@@ -31,7 +31,7 @@ cat <<'SQL'
 DROP TABLE IF EXISTS tmp_import_tiers;
 CREATE TABLE tmp_import_tiers (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  raison_sociale VARCHAR(128), type VARCHAR(16), adresse VARCHAR(255),
+  raison_sociale VARCHAR(128), adresse VARCHAR(255),
   code_postal VARCHAR(25), ville VARCHAR(50), telephone VARCHAR(30),
   email VARCHAR(128), siret VARCHAR(128)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -41,22 +41,17 @@ LOAD DATA INFILE '/tmp/tiers.csv' INTO TABLE tmp_import_tiers
   FIELDS TERMINATED BY ';' OPTIONALLY ENCLOSED BY '"'
   LINES TERMINATED BY '\n'
   IGNORE 1 LINES
-  (raison_sociale, type, adresse, code_postal, ville, telephone, email, siret);
+  (raison_sociale, adresse, code_postal, ville, telephone, email, siret);
 
 INSERT INTO llx_societe
-  (nom, entity, status, client, fournisseur, address, zip, town, fk_pays, phone, email, siret, datec, import_key)
+  (nom, entity, status, address, zip, town, fk_pays, phone, email, siret, datec, import_key)
 SELECT t.raison_sociale, 1, 1,
-       CASE WHEN t.type IN ('client','both') THEN 1 ELSE 0 END,
-       CASE WHEN t.type IN ('fournisseur','both') THEN 1 ELSE 0 END,
        t.adresse, t.code_postal, t.ville, 1, t.telephone, t.email, t.siret, NOW(), @batch
 FROM tmp_import_tiers t
 WHERE NOT EXISTS (
   SELECT 1 FROM llx_societe s
   WHERE s.entity = 1 AND s.nom = t.raison_sociale COLLATE utf8mb4_unicode_ci
 );
-
-UPDATE llx_societe SET code_client      = CONCAT('CU-IMP-', LPAD(rowid,5,'0')) WHERE import_key=@batch AND client=1;
-UPDATE llx_societe SET code_fournisseur = CONCAT('SU-IMP-', LPAD(rowid,5,'0')) WHERE import_key=@batch AND fournisseur=1;
 
 SELECT COUNT(*) AS lignes_dans_csv FROM tmp_import_tiers;
 SELECT COUNT(*) AS tiers_importes  FROM llx_societe WHERE import_key=@batch;
