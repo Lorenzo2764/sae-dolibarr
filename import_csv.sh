@@ -3,8 +3,6 @@
 # Usage : ./import_csv.sh
 #Exécute mariadb dans le conteneur (le mot de passe root est lu dans le conteneur)
 
-dbexec() { docker compose exec -T db sh -c 'MYSQL_PWD="$MARIADB_ROOT_PASSWORD" exec mariadb -uroot "$@"' sh "$@"; }
-
 import_file() {
   local CSV="$1"
   local NATURE="$2"
@@ -15,7 +13,7 @@ import_file() {
   BATCH="imp$(date +%y%m%d%H%M)${NATURE:0:1}"
 
   echo ">> Copie de $CSV dans le conteneur"
-  tr -d '\r' < "$CSV" | docker compose exec -T db sh -c 'cat > /tmp/tiers.csv && chmod 644 /tmp/tiers.csv'
+  tr -d '\r' < "$CSV" | $DC exec -T db sh -c 'cat > /tmp/tiers.csv && chmod 644 /tmp/tiers.csv'
 
   echo ">> Import de $CSV en tant que $NATURE (lot $BATCH)"
   {
@@ -54,9 +52,9 @@ SELECT COUNT(*) AS total_tiers     FROM llx_societe;
 
 DROP TABLE tmp_import_tiers;
 SQL
-  } | dbexec -t dolibarr
+  } | $DC exec -T db sh -c 'MYSQL_PWD="$MARIADB_ROOT_PASSWORD" exec mariadb -uroot -t "$MARIADB_DATABASE"'
 
-  docker compose exec -T db rm -f /tmp/tiers.csv
+  $DC exec -T db rm -f /tmp/tiers.csv
 }
 
 import_file data/tiers_clients.csv "client"
