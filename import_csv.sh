@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 # Import des tiers (clients/fournisseurs) depuis un CSV directement dans MariaDB.
-# Usage : ./import_csv.sh ["docker compose" ou "docker-compose"]
+# Usage : ./import_csv.sh
 #Exécute mariadb dans le conteneur (le mot de passe root est lu dans le conteneur)
 
-#L'argument est stocké dans $DC pour expliciter les commandes, vérifie également que l'argument est bien une variante du docker compose.
-DC=$1
-if [ -z "$DC" ]; then
-	echo "Binaire docker compose à préciser : ./import_csv.sh ['docker compose' ou 'docker-compose']"
-	exit 1
-elif [ "$DC" != "docker compose" ] && [ "$DC" != "docker-compose" ]; then
-	echo "Binaire docker compose invalide"
-	exit 1
+# Choix de la commande Compose.
+if docker compose version >/dev/null 2>&1; then
+  DC="docker compose"            # Compose v2 (plugin)
+elif command -v docker-compose >/dev/null 2>&1; then
+  DC="docker-compose"            # Compose v1 (binaire séparé)
+else
+  echo "Erreur : ni 'docker compose' ni 'docker-compose' n'est disponible." >&2
+  exit 1
 fi
 
 import_file() {
