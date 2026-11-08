@@ -53,8 +53,8 @@ WHERE NOT EXISTS (
   WHERE s.entity = 1 AND s.nom = t.raison_sociale COLLATE utf8mb4_unicode_ci
 );
 
-UPDATE llx_societe SET code_client      = CONCAT('CU-IMP-', LPAD(rowid,5,'0')) WHERE import_key=@batch AND client=1;
-UPDATE llx_societe SET code_fournisseur = CONCAT('SU-IMP-', LPAD(rowid,5,'0')) WHERE import_key=@batch AND fournisseur=1;
+UPDATE llx_societe SET code_client      = CONCAT('CU-IMP-', LPAD(rowid,12,'0')) WHERE import_key=@batch AND client=1;
+UPDATE llx_societe SET code_fournisseur = CONCAT('SU-IMP-', LPAD(rowid,12,'0')) WHERE import_key=@batch AND fournisseur=1;
 
 SELECT COUNT(*) AS lignes_dans_csv FROM tmp_import_tiers;
 SELECT COUNT(*) AS tiers_importes  FROM llx_societe WHERE import_key=@batch;
