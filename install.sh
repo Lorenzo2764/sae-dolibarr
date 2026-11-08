@@ -46,7 +46,7 @@ read -p "Port [8080] : " PORT
 PORT="${PORT:-8080}"
 
 #Envoie les variables dans les processus enfants (démarrage des conteneurs et import_csv.sh).
-export DB_ROOT_PASSWORD="DB_ROOT_PWD"
+export DB_ROOT_PASSWORD="$DB_ROOT_PWD"
 export DB_USER="$DB_USER"
 export DB_PASSWORD="$DB_PWD"
 export DB_NAME="$DB_NAME"
@@ -66,12 +66,8 @@ URL="http://localhost:${PORT}/"
 
 #Vérifie que la table llx_societe existe pour recevoir les données.
 BDD_pret() {
-  local etat
-  etat=$($DC exec -T -e MYSQL_PWD="$DB_PWD" db mariadb -N -B -u"$DB_USER" "$DB_NAME" -e \
-    "SELECT COUNT(*) FROM information_schema.tables
-     WHERE table_schema='$DB_NAME' AND table_name='llx_societe';" \
-  2>/dev/null) || return 1
-  [ "$etat" = "1" ]
+  $DC exec -T -e MYSQL_PWD="$DB_PWD" db mariadb -u"$DB_USER" "$DB_NAME" \
+    -e "SELECT 1 FROM llx_societe LIMIT 0;" >/dev/null 2>/dev/null
 }
 
 #Attends que la BDD soit prête pour commencer l'import.

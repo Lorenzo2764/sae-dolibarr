@@ -26,7 +26,7 @@ CREATE TABLE tmp_import_tiers (
   email VARCHAR(128), siret VARCHAR(128)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-LOAD DATA INFILE '/tmp/tiers.csv' INTO TABLE tmp_import_tiers
+LOAD DATA LOCAL INFILE '/tmp/tiers.csv' INTO TABLE tmp_import_tiers
   CHARACTER SET utf8mb4
   FIELDS TERMINATED BY ';' OPTIONALLY ENCLOSED BY '"'
   LINES TERMINATED BY '\n'
@@ -52,7 +52,7 @@ SELECT COUNT(*) AS total_tiers     FROM llx_societe;
 
 DROP TABLE tmp_import_tiers;
 SQL
-  } | $DC exec -T db sh -c 'MYSQL_PWD="$MARIADB_ROOT_PASSWORD" exec mariadb -uroot -t "$MARIADB_DATABASE"'
+  } | $DC exec -T db sh -c 'MYSQL_PWD="$MARIADB_PASSWORD" exec mariadb -u"$MARIADB_USER" --local-infile=1 -t "$MARIADB_DATABASE"'
 
   $DC exec -T db rm -f /tmp/tiers.csv
 }
